@@ -98,9 +98,6 @@ RUN --mount=type=ssh if [ "$compiler_version" != "release" ]; then \
     else echo "using the release compiler"; \
     fi
 
-ENV HIP_CLANG_PATH='/llvm-project/build/bin'
-RUN sh -c "echo HIP_CLANG_PATH = '$HIP_CLANG_PATH'"
-
 # Fix compiler bug in 10736
 ADD ./docker/rocm_fix /rocm_fix
 RUN python3 /rocm_fix/fix_10736.py

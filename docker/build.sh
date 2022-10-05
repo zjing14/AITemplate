@@ -17,7 +17,7 @@ if [ "$TARGET" = "cuda" ]; then
     echo "Building CUDA Docker Image with tag ait:latest"
     docker build -f ./docker/Dockerfile.cuda -t ait .
 elif [ "$TARGET" = "rocm" ]; then
-    echo "Building ROCM Docker Image with tag ait:latest"
+    echo "Building ROCM Docker Image with tag ait:rocm5.3"
     docker build -f ./docker/Dockerfile.rocm -t ait_rocm5.3 .
 else
     echo "Unknown target"
