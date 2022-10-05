@@ -40,8 +40,8 @@ wget $BASE/COCO-InstanceSegmentation/mask_rcnn_R_50_FPN_3x/137849600/model_final
 
 ### Build AIT Model, Export the Pre-trained Weights and Run Inference 
 
-cfg=examples/02_detectron2/configs/$MODEL_NAME.yaml
-CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 examples/02_detectron2/compile_model.py   \
+cfg=configs/$MODEL_NAME.yaml
+CUDA_VISIBLE_DEVICES=0,1,2,3,4,5,6,7 python3 compile_model.py   \
   --config $cfg \
   --batch 1
 

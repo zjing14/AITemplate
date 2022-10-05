@@ -15,8 +15,8 @@
 # ROCM Docker Image for AITemplate
 FROM ubuntu:20.04
 
-ARG ROCMVERSION=5.2.3
-ARG compiler_version=b0f4678b9058a4ae00200dfb1de0da5f2ea84dcb
+ARG ROCMVERSION=5.3
+ARG compiler_version="release"
 
 
 RUN set -xe
@@ -73,13 +73,6 @@ RUN wget https://github.com/Yelp/dumb-init/releases/download/v1.2.0/dumb-init_1.
 RUN dpkg -i dumb-init_*.deb && rm dumb-init_*.deb
 
 ARG PREFIX=/opt/rocm
-# Install packages for processing the performance results
-RUN pip3 install --upgrade pip
-RUN pip3 install sqlalchemy
-RUN pip3 install pymysql
-RUN pip3 install pandas
-RUN pip3 install setuptools-rust
-RUN pip3 install sshtunnel
 # Setup ubsan environment to printstacktrace
 ENV UBSAN_OPTIONS=print_stacktrace=1
 
@@ -94,9 +87,6 @@ RUN git clone -b master https://github.com/RadeonOpenCompute/rocm-cmake.git  && 
   cmake  .. && cmake --build . && cmake --build . --target install
 
 WORKDIR /
-
-ENV compiler_version=$compiler_version
-RUN sh -c "echo compiler version = '$compiler_version'"
 
 RUN --mount=type=ssh if [ "$compiler_version" != "release" ]; then \
         git clone https://github.com/RadeonOpenCompute/llvm-project.git && \
