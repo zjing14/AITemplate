@@ -140,9 +140,11 @@ def verification(
         ys.append(torch.empty(shape).cuda().half())
     ait_mod.run_with_tensors(inputs, ys)
     eps = 1e-1
+    d0, d1 = ys[0].cpu().numpy().shape
+    ys_t = ys[0].cpu().numpy().reshape(d0, 1, d1)
     np.testing.assert_allclose(
         pt_ys.detach().cpu().numpy(),
-        ys[0].cpu().numpy(),
+        ys_t,
         atol=eps,
         rtol=eps,
     )

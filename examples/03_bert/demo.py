@@ -55,7 +55,7 @@ def run_model(
     outputs = [torch.empty(mod.get_output_maximum_shape(0)).half().cuda()]
     mod.run_with_tensors(inputs_pt, outputs, graph_mode=graph_mode)
 
-    print(f"Logits: {outputs[0]}")
+    #print(f"Logits: {outputs[0]}")
     if verify:
         pt_outputs = pt_model.bert(**inputs_pt)
         torch.allclose(outputs[0], pt_outputs.last_hidden_state, 1e-1, 1e-1)

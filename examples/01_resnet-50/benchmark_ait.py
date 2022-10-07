@@ -24,7 +24,10 @@ from aitemplate.compiler import compile_model, Model
 from aitemplate.frontend import Tensor
 from aitemplate.testing import detect_target
 from modeling.resnet import build_resnet_backbone
-from weight_utils import export_to_torch_tensor
+
+from weight_utils import timm_export
+
+#from weight_utils import export_to_torch_tensor
 
 
 def mark_output(y):
@@ -66,10 +69,17 @@ def compile_module(model_name, batch_size, **kwargs):
     module = compile_model(y, target, "./tmp", model_name)
     return module
 
+def export_to_torch_tensor(model_name="resnet50"):
+    if model_name != "resnet50":
+        raise NotImplementedError
+    timm2ait = timm_export(model_name)
+    params = timm2ait.export_model(half=True)
+    return params, timm2ait.pt_model
+
 
 def benchmark(model_name, batch_size, mod=None, graph_mode=True):
     # Load params
-    cuda_params = export_to_torch_tensor(model_name)
+    cuda_params, pt_model = export_to_torch_tensor(model_name)
     # Load compiled model
     if mod is None:
         model_name = f"{model_name}_{batch_size}"
@@ -106,6 +116,23 @@ def benchmark(model_name, batch_size, mod=None, graph_mode=True):
     dev_flag = dev_flag.replace(",", "_")
     with open(f"resnet50_ait_benchmark_dev_{dev_flag}.txt", "a") as f:
         f.write(f"batch_size: {batch_size}, latency: {t}\n")
+
+
+    #print(y_output.shape)
+
+    # run pytorch
+    pt_model.eval()
+    pt_model = pt_model.cuda().half()
+    pt_output = pt_model(x_input.permute([0, 3, 1, 2]))
+
+    d0, d1 = pt_output.shape
+    pt_output = pt_output.reshape(d0, 1, 1, d1)
+    #print(pt_output.shape)
+
+    # verify outputs
+    assert torch.allclose(y_output, pt_output, 1e-1, 1e-1)
+    print("Verification done!")
+
 
 
 @click.command()
